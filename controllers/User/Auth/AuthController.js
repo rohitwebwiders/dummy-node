@@ -1,5 +1,7 @@
 const sequelize = require('../../../config/db');
-const User = require('../../../models/user');
+const db = require('../../../models/index');
+const User = db.User;
+const {successMessage, errorMessage} = require('../../../Helpers/helpers.js');
 const userRegister = async (req, res) => {
     try {
         await sequelize.authenticate();
@@ -11,7 +13,8 @@ const userRegister = async (req, res) => {
             password: req.body.password        
         };
         const userData = await User.create(newUser);
-        res.status(201).json({ message: "User registered successfully", data: userData });
+        successMessage("User registered successfully", res, 201, userData);
+        //res.status(201).json({ message: "User registered successfully", data: userData });
     } catch (error) {
         console.error("Error in userRegister:", error);
         res.status(500).json({ message: "Internal Server Error" });
