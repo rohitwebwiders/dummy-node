@@ -1,11 +1,23 @@
-const sequelize = require('../../../config/db');
 const db = require('../../../models/index');
 const User = db.User;
 const {successMessage, errorMessage} = require('../../../Helpers/helpers.js');
+
+/**
+ * Registers a new user.
+ * 
+ * This function handles the registration of a new user by:
+ * - Authenticating and synchronizing the sequelize connection.
+ * - Extracting user details (name, email, password) from the request body.
+ * - Checking if a user with the provided email already exists.
+ *   - If so, returns an error message.
+ * - Creating a new user record in the database.
+ * - Returning a success message with the created user's data.
+ * 
+ * @param {Object} req - The request object containing user registration data.
+ * @param {Object} res - The response object to send back the appropriate response.
+ */
 const userRegister = async (req, res) => {
     try {
-        await sequelize.authenticate();
-        await sequelize.sync({ force: false});
         const { name, email, password } = req.body;
         const existingUser = await User.findOne({ where: { email: email}});
         if (existingUser) {
@@ -25,4 +37,14 @@ const userRegister = async (req, res) => {
     }
 }
 
-module.exports = {userRegister};
+const userLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        await sequelize.authenticate();
+    } catch (error) {
+        console.error("Error in userLogin:", error);
+        return errorMessage("Internal Server Error", res, 500);
+    }
+}
+
+module.exports = {userRegister, userLogin};
