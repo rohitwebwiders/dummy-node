@@ -1,7 +1,7 @@
 const db = require('../../../models/index');
 const User = db.User;
 const {successMessage, errorMessage} = require('../../../Helpers/helpers.js');
-
+const { hashPassword } = require('../../../utils/passwordUtils.js');
 /**
  * Registers a new user.
  * 
@@ -23,10 +23,12 @@ const userRegister = async (req, res) => {
         if (existingUser) {
             return errorMessage("User already exists", res, 400);
         }
+        const passwordHashed = await hashPassword(password);
         const newUser = {
             name: name,
             email: email,
-            password: password        
+            password: passwordHashed,
+            user_type: 'user', // Default user type         
         };
         const userData = await User.create(newUser);
         return successMessage("User registered successfully", res, 201, userData);
@@ -41,6 +43,7 @@ const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
         await sequelize.authenticate();
+
     } catch (error) {
         console.error("Error in userLogin:", error);
         return errorMessage("Internal Server Error", res, 500);
