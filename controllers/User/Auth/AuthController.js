@@ -40,6 +40,23 @@ const userRegister = async (req, res) => {
     }
 }
 
+/**
+ * Handles user login.
+ *
+ * This function processes a user's login request by:
+ * - Extracting email and password from the request body.
+ * - Verifying the user exists in the database.
+ *   - If the user does not exist, returns an error message.
+ * - Checking the user's status to ensure it is active.
+ *   - If not active, returns an error message.
+ * - Comparing the provided password with the stored hashed password.
+ *   - If the password is invalid, returns an error message.
+ * - Generating a JWT token for the authenticated user.
+ * - Returning a success message with the JWT token and user data.
+ *
+ * @param {Object} req - The request object containing user login data.
+ * @param {Object} res - The response object to send back the appropriate response.
+ */
 const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
