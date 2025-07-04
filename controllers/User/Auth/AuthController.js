@@ -1,7 +1,7 @@
 const db = require('../../../models/index');
 const User = db.User;
 const {successMessage, errorMessage} = require('../../../Helpers/helpers.js');
-const { hashPassword } = require('../../../utils/passwordUtils.js');
+const { hashPassword, comparePassword } = require('../../../utils/passwordUtils.js');
 /**
  * Registers a new user.
  * 
@@ -42,8 +42,19 @@ const userRegister = async (req, res) => {
 const userLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        await sequelize.authenticate();
-
+        const user = await User.findOne({ where: {email: email}});
+        if (!user) {
+            return errorMessage("Invalid email or password", res, 400);
+        }
+        if (user.status !== 'active') {
+            return errorMessage("User is not active please contact admin", res, 403);
+        }
+        // Compare the provided password with the stored hashed password
+        const isPasswordValid = await comparePassword(password, user.password);
+        if (!isPasswordValid) {
+            return errorMessage("Invalid email or password", res, 400);
+        }
+        return successMessage("User logged in successfully", res, 200);  
     } catch (error) {
         console.error("Error in userLogin:", error);
         return errorMessage("Internal Server Error", res, 500);
