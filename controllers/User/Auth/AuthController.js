@@ -2,6 +2,7 @@ const db = require('../../../models/index');
 const User = db.User;
 const {successMessage, errorMessage} = require('../../../Helpers/helpers.js');
 const { hashPassword, comparePassword } = require('../../../utils/passwordUtils.js');
+const { generateToken } = require('../../../utils/jwtUtils.js');
 /**
  * Registers a new user.
  * 
@@ -54,7 +55,9 @@ const userLogin = async (req, res) => {
         if (!isPasswordValid) {
             return errorMessage("Invalid email or password", res, 400);
         }
-        return successMessage("User logged in successfully", res, 200);  
+        // Generate a JWT token for the user
+        const token = generateToken({ id: user.id, email: user.email });
+        return successMessage("User logged in successfully", res, 200, { token: token, user: user });  
     } catch (error) {
         console.error("Error in userLogin:", error);
         return errorMessage("Internal Server Error", res, 500);
