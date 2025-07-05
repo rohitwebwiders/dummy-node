@@ -1,4 +1,7 @@
 export const successMessage = (message, res, status, data = null) => {
+    if (!message) {
+        message = "Success";
+    }
     res.status(status).json({
         success: true,
         message: message,
@@ -7,6 +10,9 @@ export const successMessage = (message, res, status, data = null) => {
 }
 
 export const errorMessage = (message, res, status, data = null) => {
+    if (!message) {
+        message = "Failed";
+    }
     res.status(status).json({
         success: false,
         message: message,

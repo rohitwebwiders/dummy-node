@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+const jwt = require('jsonwebtoken');
 const SECRET_KEY = process.env.SECRET_KEY;
 const { errorMessage } = require("../Helpers/helpers.js");
 
@@ -15,19 +15,22 @@ const { errorMessage } = require("../Helpers/helpers.js");
  * @param {Object} res - The response object to send back the appropriate response.
  * @param {Function} next - The next middleware function in the stack.
  */
-export const authenticateToken = (req, res, next) => {
+const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
+    
     if (!authHeader) {
         return errorMessage("Access token is missing", res, 401);
     }
 
-    const token = authHeader.split('')[1];
-
+    const token = authHeader.split(' ')[1]; // ✅ Fix here\
     try {
+        console.log("Secret key:", SECRET_KEY);
         const user = jwt.verify(token, SECRET_KEY);
-        req.user = user;
+        req.user = user; // attach decoded payload to request
         next();
     } catch (error) {
         return errorMessage("Invalid token", res, 403);
     }
-}
+};
+
+module.exports = { authenticateToken };

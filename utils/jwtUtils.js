@@ -11,6 +11,8 @@ const SECRET_KEY = process.env.SECRET_KEY;
  */
 export const generateToken = (payload, expiresIn = "1h") => {
     try {
+        console.log("Secret key:", SECRET_KEY);
+        console.log("Payload:", payload);
         return jwt.sign(payload, SECRET_KEY, { expiresIn });
     } catch (error) {
         console.error("Error generating token:", error);
